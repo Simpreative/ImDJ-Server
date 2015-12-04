@@ -9,6 +9,6 @@ notifications:
     channels:
       - "irc.luatic.net:7778#Simpreative"
     template:
-      - "%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{commit_message}"
-      - "Build result : %{result} %{message}"
+      - "%{repository} #%{build_number} (%{branch} - %{commit} : %{author}): %{commit_message}"
+      - "Build result : %{message}"
       - "Build details : %{build_url}"
