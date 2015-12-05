@@ -1,7 +1,15 @@
 language: php
 php:
   - 7.0
-script: phpunit
+
+before_install:
+  - pecl install pthreads
+  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+install:
+  - composer install --prefer-source --dev
+script:
+  - phpunit
+
 matrix:
   fast_finish: true
 notifications:
