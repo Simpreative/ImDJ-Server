@@ -1,12 +1,11 @@
 language: php
 php:
   - 7
-
-before_install:
-  - pecl install pthreads
-  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 install:
   - composer install --prefer-source --dev
+before_script:
+  - pecl install pthreads
+  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 script:
   - phpunit
 
