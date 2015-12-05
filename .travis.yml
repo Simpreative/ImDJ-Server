@@ -5,4 +5,4 @@ script: phpunit
 matrix:
   fast_finish: true
 notifications:
-  webhooks: http://zerglinggo.net:9074/travis
+  webhooks: http://zerglinggo.net:9074/travis/notification
