@@ -1,0 +1,23 @@
+{
+    "name": "ZerglingGo/ImDJ-Server",
+    "description": "ImDJ Server",
+    "license": "MIT",
+    "keywords": ["ImDJ"],
+    "authors": [
+        {
+            "name": "ZerglingGo",
+            "email": "zerglinggo@zerglinggo.net"
+        }
+    ],
+    "require": {
+        "cboden/ratchet": "^0.3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ZerglingGo\\ImDJ-Server\\": "src"
+        }
+    }
+}
