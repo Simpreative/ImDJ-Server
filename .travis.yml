@@ -5,10 +5,4 @@ script: phpunit
 matrix:
   fast_finish: true
 notifications:
-  irc:
-    channels:
-      - "irc.luatic.net:7778#Simpreative"
-    template:
-      - "%{repository} #%{build_number} (%{branch} - %{commit} : %{author}): %{commit_message}"
-      - "Build result : %{message}"
-      - "Build details : %{build_url}"
+  webhooks: http://zerglinggo.net:9074/travis
