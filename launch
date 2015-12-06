@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+/**
+ * ImDJ Server - Listen to music with the people!
+ * 
+ * @author ZerglingGo <zerglinggo@zerglinggo.net>
+ * @license http://opensource.org/licenses/MIT MIT License
+ */
+
+require 'vendor/autoload.php';
+
+use ZerglingGo\ImDJ_Server\ImDJ_Server;
+
+if (file_exists('config.php')) {
+    require_once 'config.php';
+    $server = new ImDJ_Server();
+    $server->runServer();
+} else {
+    echo "Requires First Configuration\n";
+    echo "Bind Port [8888]: ";
+    fscanf(STDIN, "%d", $port);
+    if (!is_numeric($port) || $port < 0 || $port > 65536) {
+        $port = 8888;
+    }
+    echo "Youtube API Key: ";
+    fscanf(STDIN, "%s", $token);
+    if (!$token) {
+        echo "You must have Youtube API Key!!\n";
+        echo "Read more: https://console.developers.google.com/\n";
+        exit;
+    } else {
+        $config_file = fopen(__DIR__."/config.php", "w");
+        $config = "<?php\n";
+        fwrite($config_file, $config);
+        $config = "define('BIND_PORT', '".$port."');\n";
+        fwrite($config_file, $config);
+        $config = "define('YOUTUBE_API_TOKEN', '".$token."');";
+        fwrite($config_file, $config);
+        fclose($config_file);
+        echo "config.php was created. Please restart launcher.\n";
+        exit;
+    }
+}
