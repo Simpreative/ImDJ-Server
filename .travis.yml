@@ -1,15 +1,16 @@
 language: php
 php:
   - 7
+before_install:
+  - openssl aes-256-cbc -K $encrypted_b2411afd01ed_key -iv $encrypted_b2411afd01ed_iv -in config.php.enc -out config.php -d
 install:
   - composer install --prefer-source --dev
 before_script:
   - wget https://pecl.php.net/get/pthreads-3.1.4.tgz -O pth.tgz
-  - tar xvzf pth.tgz && cd pthreads* && phpize && ./configure && make install && cd ..
+  - tar xvzf pth.tgz && cd pthreads* && phpize && ./configure && make install && cd  ..
   - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 script:
   - phpunit
-
 matrix:
   fast_finish: true
 notifications:

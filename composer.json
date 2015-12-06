@@ -1,5 +1,5 @@
 {
-    "name": "ZerglingGo/ImDJ-Server",
+    "name": "ZerglingGo/ImDJ_Server",
     "description": "ImDJ Server",
     "license": "MIT",
     "keywords": ["ImDJ"],
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ZerglingGo\\ImDJ-Server\\": "src"
+            "ZerglingGo\\ImDJ_Server\\": "src"
         }
     }
 }
