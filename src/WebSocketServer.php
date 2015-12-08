@@ -4,16 +4,17 @@ namespace ZerglingGo\ImDJ_Server;
 use Thread;
 use ZerglingGo\ImDJ_Server\Room;
 use ZerglingGo\ImDJ_Server\Client;
-use Ratchet\ComponentInterface;
+
 use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
+use Ratchet\Wamp\WampServerInterface;
 
 require 'vendor/autoload.php';
 
-class WebSocketServer implements MessageComponentInterface {
-    protected $rooms;
-    protected $clients;
-    protected $connections;
+class WebSocketServer implements WampServerInterface {
+    public $rooms;
+    public $clients;
+    public $heartbeat;
+    public $connections;
 
     public function __construct() {
         $this->rooms = array();
@@ -23,17 +24,17 @@ class WebSocketServer implements MessageComponentInterface {
         $this->rooms[] = new Room(uniqid("R#"));
     }
 
-    public function getConnectionById($clientId) {
-        if (isset($this->connections[$clientId])) {
-           return $this->connections[$clientId];
-        } else {
-            return false;
+    protected function roomBroadcast($topic, $msg, ConnectionInterface $exclude = null) {
+        foreach ($this->rooms[$topic] as $client) {
+            if ($client !== $exclude) {
+                $client->event($topic, $msg);
+            }
         }
     }
 
-    public function getClientByConnection($conn) {
-        foreach ($this->connections as $clientId => $connection) {
-            if ($connection == $conn) {
+    protected function getClientByConnection(ConnectionInterface $conn) {
+        foreach ($this->clients as $clientId => $client) {
+            if ($conn === $client->getConnection()) {
                 return $this->clients[$clientId];
             }
         }
@@ -42,14 +43,32 @@ class WebSocketServer implements MessageComponentInterface {
 
     public function onOpen(ConnectionInterface $conn) {
         $clientId = uniqid("C#");
-        $this->clients[$clientId] = new Client($this, $clientId);
+        
+        $this->clients[$clientId] = new Client($conn, $this, $clientId);
         $this->connections[$clientId] = $conn;
         echo "Client Connected (".$clientId.")\n";
     }
-    public function onMessage(ConnectionInterface $from, $msg) {
+
+    public function onCall(ConnectionInterface $conn, $id, $topic, array $params) {
         $client = $this->getClientByConnection($from);
-        echo "Client ".$client->getId()." received message: ".$msg."\n";
+        echo "Client ".$client->getId()." onCall {$id} {$fn}\n";
+        $from->send("hi");
     }
+
+    public function onSubscribe(ConnectionInterface $conn, $topic) {
+        $client = $this->getClientByConnection($conn);
+        echo "subscribe: ".$client->getId()." {$topic}\n";
+    }
+
+    public function onUnSubscribe(ConnectionInterface $conn, $topic) {
+        $client = $this->getClientByConnection($conn);
+        echo "unsubscribe: ".$client->getId()." {$topic}\n";
+    }
+
+    public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array()) {
+        echo "publish: {$topic} {$event}\n";
+    }
+
     public function onClose(ConnectionInterface $conn) {
         $client = $this->getClientByConnection($conn);
         $clientId = $client->getId();
@@ -61,6 +80,7 @@ class WebSocketServer implements MessageComponentInterface {
         unset($this->connections[$clientId]);
         echo "Client Disconnected (".$clientId.")\n";
     }
+
     public function onError(ConnectionInterface $conn, \Exception $e) {
         $this->stdout("An error has occurred: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
         $conn->close();

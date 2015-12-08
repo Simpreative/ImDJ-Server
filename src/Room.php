@@ -27,7 +27,6 @@ class Room extends Thread {
                     $this->wait(1 * SEC);
                     $this->nowTime = $nowTime--;
                     echo $this->roomId." ".$this->nowTime."\n";
-                    //parent::send()
                 } else {
                     break;
                 }
