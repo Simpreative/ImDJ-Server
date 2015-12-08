@@ -7,7 +7,7 @@ install:
   - composer install --prefer-source --dev
 before_script:
   - wget https://pecl.php.net/get/pthreads-3.1.4.tgz -O pth.tgz
-  - tar xvzf pth.tgz && cd pthreads* && phpize && ./configure && make install && cd  ..
+  - tar xvzf pth.tgz && cd pfthreads* && phpize && ./configure && make install && cd  ..
   - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 script:
   - phpunit
