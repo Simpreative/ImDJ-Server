@@ -50,7 +50,7 @@ class WebSocketServer implements WampServerInterface {
     }
 
     public function onCall(ConnectionInterface $conn, $id, $topic, array $params) {
-        $client = $this->getClientByConnection($from);
+        $client = $this->getClientByConnection($conn);
         echo "Client ".$client->getId()." onCall {$id} {$fn}\n";
         $from->send("hi");
     }
@@ -66,7 +66,8 @@ class WebSocketServer implements WampServerInterface {
     }
 
     public function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude = array(), array $eligible = array()) {
-        echo "publish: {$topic} {$event}\n";
+        $client = $this->getClientByConnection($conn);
+        echo "publish: ".$client->getId()." {$topic} {$event}\n";
     }
 
     public function onClose(ConnectionInterface $conn) {
