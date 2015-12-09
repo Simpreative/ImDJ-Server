@@ -51,13 +51,29 @@ class WebSocketServer implements WampServerInterface {
 
     public function onCall(ConnectionInterface $conn, $id, $topic, array $params) {
         $client = $this->getClientByConnection($conn);
-        echo "Client ".$client->getId()." onCall {$id} {$fn}\n";
-        $from->send("hi");
+        switch ($topic) {
+            case 'createRoom':
+                $roomName = $this->escape($params[0]); // R#1a2b3c~~
+
+                if (empty($roomName)) {
+                    return $conn->callError($id, "Empty room name");
+                }
+
+                if (array_key_exists($this->rooms, $roomName)) {
+                    return $conn->callError($id, array('message' => "Already exists room"));
+                } else {
+                    $this->rooms[] = new Room(uniqid("R#"));
+                    return->$conn->callResult($id, array('message' => "Created Successfully"));
+                }
+
+                break;
+        }
     }
 
     public function onSubscribe(ConnectionInterface $conn, $topic) {
         $client = $this->getClientByConnection($conn);
         echo "subscribe: ".$client->getId()." {$topic}\n";
+        $conn->callError("test");
     }
 
     public function onUnSubscribe(ConnectionInterface $conn, $topic) {
@@ -85,6 +101,10 @@ class WebSocketServer implements WampServerInterface {
     public function onError(ConnectionInterface $conn, \Exception $e) {
         $this->stdout("An error has occurred: {$e->getMessage()} at {$e->getFile()}:{$e->getLine()}");
         $conn->close();
+    }
+
+    protected function escape($string) {
+        return htmlspecialchars($string);
     }
 
     public function stdout($message) {
